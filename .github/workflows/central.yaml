@@ -10,15 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Not k1LoW/octocov-action here, deliberately: that action runs
-      # octocov via actions/github-script's exec.exec(), and empirically
-      # (verified by running the identical binary/config both ways in the
-      # same job) that path does not reliably relay a job/step-level
-      # GITHUB_TOKEN down to the spawned octocov process — central.push's
-      # own git push (gh.PushUsingLocalGit) needs exactly that env var,
-      # separately from OCTOCOV_GITHUB_TOKEN (which the action does relay
-      # correctly, since it sets that one directly in its own YAML). A
-      # plain step has no such indirection, so it works.
+        with:
+          # octocov's own git push (gh.PushUsingLocalGit) sets its own
+          # explicit Basic Auth on the push. Testing whether checkout's
+          # default persisted credential (an Authorization extraheader in
+          # local git config, using the default GITHUB_TOKEN) conflicts
+          # with that explicit auth.
+          persist-credentials: false
       - name: Install octocov
         run: |
           curl -sSL https://github.com/k1LoW/octocov/releases/download/v0.79.0/octocov_v0.79.0_linux_amd64.tar.gz -o /tmp/octocov.tar.gz
