@@ -20,6 +20,11 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - name: DEBUG token presence
+        run: |
+          echo "GITHUB_TOKEN length: ${#GITHUB_TOKEN}"
+          git remote -v
+          git config --get http.https://github.com/.extraheader | wc -c
       - uses: k1LoW/octocov-action@v1
         with:
           config: .octocov.yml
