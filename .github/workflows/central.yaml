@@ -8,28 +8,26 @@ permissions:
 jobs:
   central:
     runs-on: ubuntu-latest
-    # Job-level, not step-level: octocov's own central.push does a git push
-    # back to *this* repo via gh.PushUsingLocalGit, which authenticates
-    # with os.Getenv("GITHUB_TOKEN") specifically — a different env var
-    # from OCTOCOV_GITHUB_TOKEN (below, fed by octocov-action's
-    # github-token input, used only for the cross-repo artifact read from
-    # tangle). Job-level env is unambiguously inherited into a composite
-    # action's own internal steps; a step-level env on the call site
-    # wasn't enough to reach the octocov binary reliably.
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: k1LoW/octocov-action@v1
-        continue-on-error: true
-        with:
-          config: .octocov.yml
-          version: v0.79.0
-          github-token: ${{ secrets.TANGLE_ARTIFACTS_TOKEN }}
-      - name: DEBUG run already-installed octocov directly (plain step, no composite/github-script wrapping)
-        env:
-          OCTOCOV_GITHUB_TOKEN: ${{ secrets.TANGLE_ARTIFACTS_TOKEN }}
+      # Not k1LoW/octocov-action here, deliberately: that action runs
+      # octocov via actions/github-script's exec.exec(), and empirically
+      # (verified by running the identical binary/config both ways in the
+      # same job) that path does not reliably relay a job/step-level
+      # GITHUB_TOKEN down to the spawned octocov process — central.push's
+      # own git push (gh.PushUsingLocalGit) needs exactly that env var,
+      # separately from OCTOCOV_GITHUB_TOKEN (which the action does relay
+      # correctly, since it sets that one directly in its own YAML). A
+      # plain step has no such indirection, so it works.
+      - name: Install octocov
         run: |
-          git config user.email "test@example.com"
-          git config user.name "test"
-          /usr/local/bin/octocov --config=.octocov.yml
+          curl -sSL https://github.com/k1LoW/octocov/releases/download/v0.79.0/octocov_v0.79.0_linux_amd64.tar.gz -o /tmp/octocov.tar.gz
+          tar -xzf /tmp/octocov.tar.gz -C /tmp octocov
+          sudo install -m 755 /tmp/octocov /usr/local/bin/octocov
+      - name: Run octocov (central mode)
+        env:
+          # Cross-repo read of tangle's artifact:// datastore.
+          OCTOCOV_GITHUB_TOKEN: ${{ secrets.TANGLE_ARTIFACTS_TOKEN }}
+          # central.push's own git push back to this repo.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: octocov --config=.octocov.yml
