@@ -1,0 +1,17 @@
+name: Central
+on:
+  schedule:
+    - cron: '0 6 * * *'  # daily
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  central:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: k1LoW/octocov-action@v1
+        with:
+          config: .octocov.yml
+          version: v0.79.0
+          github-token: ${{ secrets.TANGLE_ARTIFACTS_TOKEN }}
