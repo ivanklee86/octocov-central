@@ -14,4 +14,13 @@ jobs:
         with:
           config: .octocov.yml
           version: v0.79.0
+          # Only for reading tangle's artifact:// datastore (a cross-repo
+          # read) — octocov-action forwards this as OCTOCOV_GITHUB_TOKEN.
           github-token: ${{ secrets.TANGLE_ARTIFACTS_TOKEN }}
+        env:
+          # Separately, for octocov's own `central.push` back to *this*
+          # repo: its git push (gh.PushUsingLocalGit) authenticates with
+          # the plain GITHUB_TOKEN env var specifically — a different var
+          # from OCTOCOV_GITHUB_TOKEN above — so the read-only,
+          # tangle-scoped PAT never has to (and couldn't) push here.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
