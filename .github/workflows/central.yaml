@@ -20,18 +20,16 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: DEBUG test push with username "octocov" (mimics octocov's own auth)
-        run: |
-          git config user.email "test@example.com"
-          git config user.name "test"
-          git commit --allow-empty -m "test push as octocov"
-          git push "https://octocov:${GITHUB_TOKEN}@github.com/ivanklee86/octocov-central.git" HEAD:main 2>&1 || echo "OCTOCOV_USERNAME_PUSH_FAILED"
-      - name: DEBUG test push with username "x-access-token"
-        run: |
-          git commit --allow-empty -m "test push as x-access-token"
-          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/ivanklee86/octocov-central.git" HEAD:main 2>&1 || echo "XACCESSTOKEN_USERNAME_PUSH_FAILED"
       - uses: k1LoW/octocov-action@v1
+        continue-on-error: true
         with:
           config: .octocov.yml
           version: v0.79.0
           github-token: ${{ secrets.TANGLE_ARTIFACTS_TOKEN }}
+      - name: DEBUG run already-installed octocov directly (plain step, no composite/github-script wrapping)
+        env:
+          OCTOCOV_GITHUB_TOKEN: ${{ secrets.TANGLE_ARTIFACTS_TOKEN }}
+        run: |
+          git config user.email "test@example.com"
+          git config user.name "test"
+          /usr/local/bin/octocov --config=.octocov.yml
