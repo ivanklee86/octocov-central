@@ -6,5 +6,3 @@ central:
   badges:
     datastores:
       - local://badges
-  push:
-    if: env.GITHUB_REF == 'refs/heads/main'

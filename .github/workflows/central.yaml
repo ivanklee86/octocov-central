@@ -10,13 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          # octocov's own git push (gh.PushUsingLocalGit) sets its own
-          # explicit Basic Auth on the push. Testing whether checkout's
-          # default persisted credential (an Authorization extraheader in
-          # local git config, using the default GITHUB_TOKEN) conflicts
-          # with that explicit auth.
-          persist-credentials: false
+      # Not k1LoW/octocov-action, and not octocov's own central.push,
+      # deliberately — see git history on .octocov.yml/this file for the
+      # investigation. In short: octocov's central.push does its own git
+      # push via go-git (gh.PushUsingLocalGit), which fails with
+      # "authorization failed" against GitHub for reasons independent of
+      # env-var relay, workflow permissions, credential-header conflicts,
+      # or username (all ruled out via a same-job A/B test matrix) — a
+      # plain `git push` with the identical token succeeds every time.
+      # Rather than fight go-git's transport, .octocov.yml omits `push:`
+      # entirely (which octocov treats as "write locally, don't push" —
+      # the same graceful-skip path already used for reReport), and this
+      # workflow pushes with plain git itself.
       - name: Install octocov
         run: |
           curl -sSL https://github.com/k1LoW/octocov/releases/download/v0.79.0/octocov_v0.79.0_linux_amd64.tar.gz -o /tmp/octocov.tar.gz
@@ -24,8 +29,18 @@ jobs:
           sudo install -m 755 /tmp/octocov /usr/local/bin/octocov
       - name: Run octocov (central mode)
         env:
-          # Cross-repo read of tangle's artifact:// datastore.
           OCTOCOV_GITHUB_TOKEN: ${{ secrets.TANGLE_ARTIFACTS_TOKEN }}
-          # central.push's own git push back to this repo.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: octocov --config=.octocov.yml
+      - name: Commit and push the regenerated dashboard/badges
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git add -A
+          git commit -m "Update by octocov [skip ci]"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/ivanklee86/octocov-central.git" HEAD:main
