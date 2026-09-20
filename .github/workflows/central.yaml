@@ -8,19 +8,20 @@ permissions:
 jobs:
   central:
     runs-on: ubuntu-latest
+    # Job-level, not step-level: octocov's own central.push does a git push
+    # back to *this* repo via gh.PushUsingLocalGit, which authenticates
+    # with os.Getenv("GITHUB_TOKEN") specifically — a different env var
+    # from OCTOCOV_GITHUB_TOKEN (below, fed by octocov-action's
+    # github-token input, used only for the cross-repo artifact read from
+    # tangle). Job-level env is unambiguously inherited into a composite
+    # action's own internal steps; a step-level env on the call site
+    # wasn't enough to reach the octocov binary reliably.
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: k1LoW/octocov-action@v1
         with:
           config: .octocov.yml
           version: v0.79.0
-          # Only for reading tangle's artifact:// datastore (a cross-repo
-          # read) — octocov-action forwards this as OCTOCOV_GITHUB_TOKEN.
           github-token: ${{ secrets.TANGLE_ARTIFACTS_TOKEN }}
-        env:
-          # Separately, for octocov's own `central.push` back to *this*
-          # repo: its git push (gh.PushUsingLocalGit) authenticates with
-          # the plain GITHUB_TOKEN env var specifically — a different var
-          # from OCTOCOV_GITHUB_TOKEN above — so the read-only,
-          # tangle-scoped PAT never has to (and couldn't) push here.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
