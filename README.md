@@ -2,7 +2,7 @@
 
 | Repository | Coverage | Code to Test Ratio | Time Execution Time | Badges |
 | --- | --- | --- | --- | --- |
-| [ivanklee86/tangle](https://github.com/ivanklee86/tangle) | 76.3% | - | 1s | [![ivanklee86/tangle](https://raw.githubusercontent.com/ivanklee86/octocov-central/main/badges/ivanklee86/tangle/coverage.svg)](https://octocov.dev/ivanklee86/tangle) [![ivanklee86/tangle](https://raw.githubusercontent.com/ivanklee86/octocov-central/main/badges/ivanklee86/tangle/time.svg)](https://octocov.dev/ivanklee86/tangle) <details><summary>Copy status badge markdown</summary>```[![Coverage](https://raw.githubusercontent.com/ivanklee86/octocov-central/main/badges/ivanklee86/tangle/coverage.svg)](https://octocov.dev/ivanklee86/tangle)```<br>```[![Test Execution Time](https://raw.githubusercontent.com/ivanklee86/octocov-central/main/badges/ivanklee86/tangle/time.svg)](https://octocov.dev/ivanklee86/tangle)```</details> |
+| [ivanklee86/tangle](https://github.com/ivanklee86/tangle) | 83.0% | - | 1s | [![ivanklee86/tangle](https://raw.githubusercontent.com/ivanklee86/octocov-central/main/badges/ivanklee86/tangle/coverage.svg)](https://octocov.dev/ivanklee86/tangle) [![ivanklee86/tangle](https://raw.githubusercontent.com/ivanklee86/octocov-central/main/badges/ivanklee86/tangle/time.svg)](https://octocov.dev/ivanklee86/tangle) <details><summary>Copy status badge markdown</summary>```[![Coverage](https://raw.githubusercontent.com/ivanklee86/octocov-central/main/badges/ivanklee86/tangle/coverage.svg)](https://octocov.dev/ivanklee86/tangle)```<br>```[![Test Execution Time](https://raw.githubusercontent.com/ivanklee86/octocov-central/main/badges/ivanklee86/tangle/time.svg)](https://octocov.dev/ivanklee86/tangle)```</details> |
 
 ---
 
