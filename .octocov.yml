@@ -3,6 +3,7 @@ central:
   reports:
     datastores:
       - artifact://ivanklee86/tangle
+      - artifact://ivanklee86/rubrical
   badges:
     datastores:
       - local://badges
