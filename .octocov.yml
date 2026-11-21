@@ -4,6 +4,7 @@ central:
     datastores:
       - artifact://ivanklee86/tangle
       - artifact://ivanklee86/rubrical
+      - artifact://ivanklee86/gantry
   badges:
     datastores:
       - local://badges
