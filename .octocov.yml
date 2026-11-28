@@ -6,6 +6,7 @@ central:
       - artifact://ivanklee86/rubrical
       - artifact://ivanklee86/gantry
       - artifact://ivanklee86/argonap
+      - artifact://ivanklee86/releash
   badges:
     datastores:
       - local://badges
